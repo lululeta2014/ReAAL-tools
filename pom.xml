@@ -1,0 +1,118 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.almende.reaal</groupId>
+	<artifactId>authproxy</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>Authentication conversion proxy</name>
+	<packaging>war</packaging>
+
+	<developers>
+		<developer>
+			<name>Ludo Stellingwerff</name>
+			<id>ludo</id>
+			<email>ludo@almende.org</email>
+			<organization>Almende BV, the Netherlands</organization>
+			<url>http://www.almende.org/</url>
+			<timezone>1</timezone>
+		</developer>
+	</developers>
+
+	<properties>
+		<maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
+		<jackson.version>2.3.0</jackson.version>
+		<wink.version>1.4</wink.version>
+		<cors.version>1.8</cors.version>
+		<redis.version>2.2.1</redis.version>
+		<slf4j.version>1.7.5</slf4j.version>
+		<jetty.version>9.1.0.v20131115</jetty.version>
+		<httpclient.version>4.2.3</httpclient.version>
+		<codec.version>1.8</codec.version>
+
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.wink</groupId>
+			<artifactId>wink-server</artifactId>
+			<version>${wink.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.thetransactioncompany</groupId>
+			<artifactId>cors-filter</artifactId>
+			<version>${cors.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+			<version>${redis.version}</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-maven-plugin</artifactId>
+			<version>${jetty.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>${httpclient.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>${codec.version}</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<version>${jetty.version}</version>
+				<configuration>
+					<httpConnector>
+						<port>8088</port>
+					</httpConnector>
+					<reload>manual</reload>
+					<webAppSourceDirectory>${basedir}/src/main/webapp</webAppSourceDirectory>
+					<webApp>
+						<contextPath>/</contextPath>
+						<descriptor>WEB-INF/web.xml</descriptor>
+					</webApp>
+					<stopKey>Stop...</stopKey>
+					<stopPort>9999</stopPort>
+				</configuration>
+			</plugin>
+		</plugins>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>${maven-compiler-plugin.version}</version>
+					<configuration>
+						<source>1.7</source>
+						<target>1.7</target>
+						<encoding>UTF-8</encoding>
+						<compilerArguments>
+							<verbose />
+						</compilerArguments>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+</project>

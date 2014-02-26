@@ -1,0 +1,194 @@
+body, html, th, td {
+  font-family: verdana, serif;
+  font-size: 10pt;
+  color: #4d4d4d;
+}
+
+h1 {
+  font-size: 180%;
+  padding-top: 30px;
+  color: #b8c036;
+}
+
+h2 {
+  font-size: 120%;
+  padding-top: 20px;
+  color: #008194;
+}
+
+h3 {
+  color: #b8c036;
+  border-bottom: 1px solid #b8c036;
+  margin-top: 30px;
+}
+
+div.infobox {
+  position: fixed;
+  margin: 0 auto;
+  top: 20px;
+  left: 0;
+  right: 0;
+  width: 200px;
+
+  padding: 5px 15px;
+  color: #b8c036;
+  border: 1px solid #b8c036;
+  background-color: white;
+  border-radius: 5px;
+  text-align: center;
+  box-shadow: 2px 2px 10px rgba(128, 128, 128, 0.1);
+
+  opacity: 0;
+  transition: opacity .1s ease-in;
+}
+
+div.infobox.visible {
+  opacity: 1;
+  transition: opacity 1s ease-in;
+}
+
+div.infobox.error {
+  color: white;
+  border-color: red;
+  background-color: red;
+  width: 600px;
+  transition: none;
+}
+
+a {
+  color: #008194;
+}
+
+a:hover {
+  color: red;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+table.sub {
+  margin: 5px 5px 5px 40px ;
+}
+
+table th {
+  text-align: left;
+  background-color: #f5f5f5;
+}
+
+table th, table td {
+  border: 1px solid lightgray;
+  padding: 5px 10px;
+}
+
+table.clean th,
+table.clean td {
+  font-weight: normal;
+  border: none;
+  padding: 3px 0 3px 10px;
+  background: none;
+}
+
+span.info {
+  color: lightgray;
+}
+
+span.error {
+  color: red;
+}
+
+#container {
+  position: relative;
+  width: 720px;
+  max-width: 100%;
+  margin: 0 auto 100px auto;
+}
+
+#logo {
+  width: 100px;
+  height: 403px;
+  position: absolute;
+  left: -150px;
+  top: 30px;
+}
+
+input[type=text] {
+  border: 1px solid lightgray;
+  padding: 5px;
+}
+
+div.dialog table.buttons {
+  width: 100%;
+  margin: 40px 0 0 0 ;
+}
+div.dialog table.buttons td {
+  border: none;
+}
+
+div.dialog-overlay {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+
+  background-color: gray;
+  opacity: 0.4;
+}
+
+div.dialog-bg {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+div.dialog {
+  width: 420px;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 80px;
+  background-color: white;
+  padding: 0 40px 40px 40px;
+  border: 1px solid gray;
+  border-radius: 2px;
+  box-shadow: 0 0 15px gray;
+
+  overflow: visible;
+}
+
+/* Small screen styling */
+
+.small form table {
+  margin-top: 0;
+}
+
+.small div.dialog-overlay {
+  display: none;
+}
+
+.small div.dialog-bg {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.small div.dialog {
+  width: 420px;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  box-shadow: none;
+}
+
+.small .background {
+  display: none;
+}
+
+.icon {
+	width:20px;
+	height:20px;
+}

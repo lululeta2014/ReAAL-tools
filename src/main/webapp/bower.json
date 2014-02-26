@@ -1,0 +1,14 @@
+{
+  "name": "reaal-gui",
+  "version": "1.0.0-SNAPSHOT",
+  "main": "index.html",
+  "dependencies": {
+    "angular": "latest",
+    "angular-resource": "latest",
+    "angular-table": "latest",
+    "jquery": "latest",
+    "jquery-form": "latest",
+    "underscore": "latest",
+    "node-uuid": "latest"
+  }
+}

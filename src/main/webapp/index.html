@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html ng-app="reaalproxy">
+<head>
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1" />
+<link rel="stylesheet" type="text/css" href="css/main.css" />
+<link href="img/favicon.ico" rel="Shortcut Icon">
+<script type="text/javascript"
+	src="bower_components/angular/angular.min.js"></script>
+<script type="text/javascript"
+	src="bower_components/angular-resource/angular-resource.min.js"></script>
+<script type="text/javascript"
+	src="bower_components/jquery/dist/jquery.min.js"></script>
+<script type="text/javascript"
+	src="bower_components/jquery-form/jquery.form.js"></script>
+<script type="text/javascript"
+	src="bower_components/underscore/underscore.js"></script>
+<script type="text/javascript" src="bower_components/node-uuid/uuid.js"></script>
+<script type="text/javascript" src="js/app/main.js"></script>
+
+</head>
+<body style="background-color: #EEEEEE">
+	<div
+		style="margin-left: auto; margin-right: auto; width: 80%; background-color: #CCEEEE; padding: 10px; border: 1px solid #AACCCC">
+		<div style="text-align: center">
+			<div style="float: left; border: 1px solid #AACCCC; padding: 2px;">
+				<img src="img/logo.png"
+					style="display: block; background-color: white">
+			</div>
+			<img src="img/almende-logo.png"
+				style="float: right; border: 1px solid #AACCCC; padding: 2px">
+			<h1>Zorgportaal&nbsp;-&nbsp;Sense&nbsp;proxy</h1>
+		</div>
+		<div ng-controller="ListController">
+			<div ng-class="{'infobox': !loading, 'infobox visible': loading}">loading...</div>
+			<div class="infobox"
+				ng-class="{'infobox': !saving, 'infobox visible': saving}">saving...</div>
+			<div class="infobox error"
+				ng-class="{'infobox': !error, 'infobox visible': error}">
+				{{error}} <input type="button" ng-click="error=null" value="&times;"
+					title="Close error message">
+			</div>
+
+			<h2>Add account:</h2>
+			<form>
+				<input ng-model="newusername" name="UserName"
+					placeholder="Enter username" />
+				<button ng-click="createAccount()">Create</button>
+			</form>
+			<h2>Existing accounts:</h2>
+			<table>
+				<tr>
+					<th>Username</th>
+					<th>App password</th>
+					<th>Sense</th>
+					<th>OAuth</th>
+					<th></th>
+				</tr>
+
+				<tr
+					ng-repeat="account in accounts | orderBy:'username' track by account.username">
+					<td ng-init="checkLoaded($index)">{{ account.username }}</td>
+					<td><span ng-show="shown($index)"><button
+								ng-click="show(-1)">hide</button>&nbsp;&nbsp;{{account.password}}</span>
+						<span ng-hide="shown($index)"><button
+								ng-click="show($index)">show</button>&nbsp;&nbsp;*****</span></td>
+					<td><img class="icon" src="/img/dialog-clean.png"
+						title="This account is correctly registered in Sense."
+						ng-show="account.inSense"> <img class="icon"
+						src="/img/dialog-error-7.png" ng-hide="account.inSense"
+						title="This account is not yet registered in Sense."></td>
+					<td><img class="icon" src="/img/dialog-clean.png"
+						ng-show="account.oauth"
+						title="The Sense OAuth authentication data has been collected.">
+						<img class="icon" src="/img/dialog-error-7.png"
+						ng-hide="account.oauth"
+						title="The Sense OAuth authentication data has not been collected yet."></td>
+					<td><button ng-click="deleteAccount(account)">delete</button></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</body>
+</html>
