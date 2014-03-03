@@ -11,6 +11,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -45,7 +46,7 @@ public class RestServlet {
 		ArrayNode result = JOM.createArrayNode();
 		for (String key : keys) {
 			ObjectNode item = JOM.createObjectNode();
-			item.put("username", key);
+			item.put("zprId", key);
 			result.add(item);
 		}
 		return Response.ok(result.toString()).build();
@@ -68,22 +69,23 @@ public class RestServlet {
 					AccountBean.class);
 			
 			if (account != null) {
-				if (db.exists(account.getUsername())) {
+				if (db.exists(account.getZprId())) {
 					DB.returnInstance(db);
 					return Response.status(Status.PRECONDITION_FAILED)
 							.entity("Account already exists").build();
 				}
-				String stored = JOM.getInstance().writeValueAsString(account);
-				db.set(account.getUsername(), stored);
-				DB.returnInstance(db);
-				
+				account.setPassword(PasswordGenerator.gen());
 				SenseClient.login();
-				if (SenseClient.checkUser(account.getUsername())) {
+				if (SenseClient.checkUser(account.getEmail())) {
 					SenseClient.createUser(account);
+					SenseClient.addToDomain(account);
 				} else {
 					System.err.println("Sense user already exist:"
-							+ account.getUsername());
+							+ account.getEmail());
 				}
+				String stored = JOM.getInstance().writeValueAsString(account);
+				db.set(account.getZprId(), stored);
+				DB.returnInstance(db);
 				
 				return Response.ok(
 						JOM.getInstance().writeValueAsString(account)).build();
@@ -162,7 +164,7 @@ public class RestServlet {
 						.build();
 			}
 			SenseClient.login(account);
-			SenseClient.deleteUser(account.getUsername());
+			SenseClient.deleteUser(account.getSenseId());
 			db.del(id);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -170,17 +172,44 @@ public class RestServlet {
 		DB.returnInstance(db);
 		return Response.noContent().build();
 	}
-	
 	/**
-	 * @param username
-	 * @return ok
+	 * @param id
+	 * @return account
 	 */
-	@Path("test/{id}")
-	@GET
-	public Response testSense(@PathParam("id") String username) {
-		SenseClient.login();
-		SenseClient.checkUser(username);
+	@Path("{id}")
+	@PUT
+	public Response retrySenseAccount(@PathParam("id") String id){
+		Jedis db = DB.getInstance(DBID);
 		
-		return Response.ok().build();
+		if (!db.exists(id)) {
+			DB.returnInstance(db);
+			return Response.status(Status.NOT_FOUND)
+					.entity("Account '" + id + "' doesn't exist").build();
+		}
+		try {
+			AccountBean account = JOM.getInstance().readValue(db.get(id),
+					AccountBean.class);
+			if (account == null) {
+				DB.returnInstance(db);
+				return Response.status(Status.NOT_FOUND)
+						.entity("Account '" + id + "' couldn't be read.")
+						.build();
+			}
+			SenseClient.login();
+			SenseClient.createUser(account);
+			SenseClient.addToDomain(account);
+			
+			String stored = JOM.getInstance().writeValueAsString(account);
+			db.set(account.getZprId(), stored);
+			DB.returnInstance(db);
+			
+			return Response.ok(
+					JOM.getInstance().writeValueAsString(account)).build();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		DB.returnInstance(db);
+		return Response.noContent().build();
 	}
+	
 }

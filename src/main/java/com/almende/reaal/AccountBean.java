@@ -18,31 +18,61 @@ public class AccountBean implements Serializable {
 	public AccountBean() {
 	}
 	
-	private String	username			= null;
+	private String  zprId				= null;
+	private String	email				= null;
+	private String  senseId				= null;
 	private String	password			= null;
 	private String	oauthToken			= null;
 	private String	oauthVerifier		= null;
 	private String	consumerCategory	= "default";
 	
 	/**
+	 * @return ZprId
+	 */
+	public String getZprId() {
+		return zprId;
+	}
+
+	/**
+	 * @param zprId
+	 */
+	public void setZprId(String zprId) {
+		this.zprId = zprId;
+	}
+
+	/**
 	 * Gets the username.
 	 * 
 	 * @return the username
 	 */
-	public String getUsername() {
-		return username;
+	public String getEmail() {
+		return email;
 	}
 	
 	/**
-	 * Sets the username.
+	 * Sets the email.
 	 * 
-	 * @param username
-	 *            the new username
+	 * @param email
+	 *            the new email
 	 */
-	public void setUsername(String username) {
-		this.username = username;
+	public void setEmail(String email) {
+		this.email = email;
 	}
 	
+	/**
+	 * @return SenseId
+	 */
+	public String getSenseId() {
+		return senseId;
+	}
+
+	/**
+	 * @param senseId
+	 */
+	public void setSenseId(String senseId) {
+		this.senseId = senseId;
+	}
+
 	/**
 	 * Gets the password.
 	 * 
@@ -125,7 +155,7 @@ public class AccountBean implements Serializable {
 	 * @return inSense?
 	 */
 	public boolean isInSense() {
-		return !SenseClient.checkUser(username);
+		return !SenseClient.checkUser(email);
 	}
 	
 	/**

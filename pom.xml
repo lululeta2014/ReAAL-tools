@@ -94,6 +94,7 @@
 					</webApp>
 					<stopKey>Stop...</stopKey>
 					<stopPort>9999</stopPort>
+					<webAppXml>src/test/resources/jetty-test.xml</webAppXml>
 				</configuration>
 			</plugin>
 		</plugins>

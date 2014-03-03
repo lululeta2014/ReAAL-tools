@@ -43,14 +43,17 @@
 
 			<h2>Add account:</h2>
 			<form>
-				<input ng-model="newusername" name="UserName"
-					placeholder="Enter username" />
+				Email-adres:<input ng-model="newemail" name="email"
+					placeholder="Enter email adres" /><br>
+					ZPR user id:<input ng-model="newZprId" name="zprid"
+					placeholder="Enter ZPR user id" />
 				<button ng-click="createAccount()">Create</button>
 			</form>
 			<h2>Existing accounts:</h2>
 			<table>
 				<tr>
-					<th>Username</th>
+					<th>Zpr Id</th>
+					<th>Email</th>
 					<th>App password</th>
 					<th>Sense</th>
 					<th>OAuth</th>
@@ -58,21 +61,22 @@
 				</tr>
 
 				<tr
-					ng-repeat="account in accounts | orderBy:'username' track by account.username">
-					<td ng-init="checkLoaded($index)">{{ account.username }}</td>
+					ng-repeat="account in accounts | orderBy:'email' track by account.email">
+					<td ng-init="checkLoaded($index)">{{ account.zprId }}</td>
+					<td ng-init="checkLoaded($index)">{{ account.email }}</td>
 					<td><span ng-show="shown($index)"><button
 								ng-click="show(-1)">hide</button>&nbsp;&nbsp;{{account.password}}</span>
 						<span ng-hide="shown($index)"><button
 								ng-click="show($index)">show</button>&nbsp;&nbsp;*****</span></td>
-					<td><img class="icon" src="/img/dialog-clean.png"
+					<td><img class="icon" src="img/dialog-clean.png"
 						title="This account is correctly registered in Sense."
 						ng-show="account.inSense"> <img class="icon"
-						src="/img/dialog-error-7.png" ng-hide="account.inSense"
+						src="img/dialog-error-7.png" ng-hide="account.inSense"
 						title="This account is not yet registered in Sense."></td>
-					<td><img class="icon" src="/img/dialog-clean.png"
+					<td><img class="icon" src="img/dialog-clean.png"
 						ng-show="account.oauth"
 						title="The Sense OAuth authentication data has been collected.">
-						<img class="icon" src="/img/dialog-error-7.png"
+						<img class="icon" src="img/dialog-error-7.png"
 						ng-hide="account.oauth"
 						title="The Sense OAuth authentication data has not been collected yet."></td>
 					<td><button ng-click="deleteAccount(account)">delete</button></td>

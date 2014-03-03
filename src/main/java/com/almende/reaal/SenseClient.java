@@ -22,6 +22,7 @@ import org.apache.http.util.EntityUtils;
 
 import com.almende.reaal.apachehttp.ApacheHttpClient;
 import com.almende.reaal.jackson.JOM;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
@@ -38,7 +39,7 @@ public class SenseClient {
 	 */
 	public static void login() {
 		AccountBean defaultAccount = new AccountBean();
-		defaultAccount.setUsername(Settings.SenseUser);
+		defaultAccount.setEmail(Settings.SenseUser);
 		defaultAccount.setPassword(Settings.SensePassword);
 		login(defaultAccount);
 	}
@@ -53,7 +54,7 @@ public class SenseClient {
 			
 			httpPost = new HttpPost(URI.create(base + "/login"));
 			ObjectNode params = JOM.createObjectNode();
-			params.put("username", account.getUsername());
+			params.put("username", account.getEmail());
 			params.put("password", DigestUtils.md5Hex(account.getPassword()));
 			
 			StringEntity entity = new StringEntity(JOM.getInstance()
@@ -63,14 +64,13 @@ public class SenseClient {
 			httpPost.setEntity(entity);
 			final HttpResponse webResp = client.execute(httpPost);
 			final String result = EntityUtils.toString(webResp.getEntity());
-			
 			if (webResp.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
 				LOG.warning("Received HTTP Error Status:"
 						+ webResp.getStatusLine().getStatusCode() + ":"
 						+ webResp.getStatusLine().getReasonPhrase());
 				LOG.warning(result);
 			} else {
-				LOG.info("Logged into Sense.");
+				LOG.info("Logged into Sense:"+account.getEmail()+" : "+result);
 			}
 		} catch (final Exception e) {
 			LOG.log(Level.WARNING, "HTTP roundtrip resulted in exception!", e);
@@ -108,12 +108,13 @@ public class SenseClient {
 	/**
 	 * Delete user.
 	 * 
-	 * @param username
+	 * @param id
 	 *            the username
 	 */
-	public static void deleteUser(String username){
+	public static void deleteUser(String id){
+		LOG.info("Deleting user:"+id);
 		HttpDelete httpDelete = new HttpDelete(URI.create(Settings.SenseBaseUrl
-				+ "/users/" + username));
+				+ "/users/" + id));
 		
 		try {
 			final HttpResponse webResp = client.execute(httpDelete);
@@ -142,16 +143,56 @@ public class SenseClient {
 	public static void createUser(AccountBean account) {
 		HttpPost httpPost = new HttpPost(URI.create(Settings.SenseBaseUrl
 				+ "/users.json?disable_mail=1"));
+		ObjectNode user = JOM.createObjectNode();
+		ObjectNode realUser = JOM.createObjectNode();
+		realUser.put("email", account.getZprId()+"@example.com");
+		realUser.put("username", account.getEmail());
+		realUser.put("password", DigestUtils.md5Hex(account.getPassword()));
+		user.put("user", realUser);
 		
 		try {
-			ObjectNode user = JOM.createObjectNode();
-			ObjectNode realUser = JOM.createObjectNode();
-			realUser.put("email", account.getUsername()+"@example.com");
-			realUser.put("username", account.getUsername());
-			realUser.put("password", DigestUtils.md5Hex(account.getPassword()));
-			user.put("user", realUser);
 			StringEntity entity = new StringEntity(JOM.getInstance()
 					.writeValueAsString(user));
+			httpPost.setEntity(entity);
+			entity.setContentType("application/json");
+			final HttpResponse webResp = client.execute(httpPost);
+			final String result = EntityUtils.toString(webResp.getEntity());
+			
+			if (webResp.getStatusLine().getStatusCode() != HttpStatus.SC_CREATED) {
+				LOG.warning("Received HTTP Error Status:"
+						+ webResp.getStatusLine().getStatusCode() + ":"
+						+ webResp.getStatusLine().getReasonPhrase());
+				LOG.warning(result);
+			} else {
+				ObjectNode res = (ObjectNode) JOM.getInstance().readTree(result);
+				LOG.info(res+" --> " + res.get("user").get("id").asText());
+				account.setSenseId(res.get("user").get("id").asText());
+			}
+		} catch (ParseException | IOException e) {
+			LOG.log(Level.WARNING, "HTTP roundtrip resulted in exception!", e);
+		} finally {
+			if (httpPost != null) {
+				httpPost.reset();
+			}
+		}
+	}
+	
+	/**
+	 * @param account
+	 */
+	public static void addToDomain(AccountBean account){
+		HttpPost httpPost = new HttpPost(URI.create(Settings.SenseBaseUrl
+				+ "/domains/"+Settings.SenseDomainId+"/users"));
+		ObjectNode envelop = JOM.createObjectNode();
+		ArrayNode users = JOM.createArrayNode();
+		ObjectNode user = JOM.createObjectNode();
+		user.put("username", account.getEmail());
+		user.put("id", account.getSenseId());
+		users.add(user);
+		envelop.put("users", users);
+		try {
+			StringEntity entity = new StringEntity(JOM.getInstance()
+					.writeValueAsString(envelop));
 			httpPost.setEntity(entity);
 			entity.setContentType("application/json");
 			final HttpResponse webResp = client.execute(httpPost);
