@@ -30,6 +30,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @Path("/")
 public class RestServlet {
 	private static final int	DBID	= 1;
+	private static final String	EMAILS	= "emailaddresses";
 	
 	/**
 	 * List accounts.
@@ -45,6 +46,9 @@ public class RestServlet {
 		
 		ArrayNode result = JOM.createArrayNode();
 		for (String key : keys) {
+			if (key.equals(EMAILS)){
+				continue;
+			}
 			ObjectNode item = JOM.createObjectNode();
 			item.put("zprId", key);
 			result.add(item);
@@ -71,8 +75,19 @@ public class RestServlet {
 			if (account != null) {
 				if (db.exists(account.getZprId())) {
 					DB.returnInstance(db);
-					return Response.status(Status.PRECONDITION_FAILED)
-							.entity("Account already exists").build();
+					return Response
+							.status(Status.PRECONDITION_FAILED)
+							.entity("Account with ZPR username: "
+									+ account.getZprId() + " already exists")
+							.build();
+				}
+				if (db.sismember(EMAILS,account.getEmail())) {
+					DB.returnInstance(db);
+					return Response
+							.status(Status.PRECONDITION_FAILED)
+							.entity("Account with email adres: "
+									+ account.getEmail() + " already exists")
+							.build();
 				}
 				account.setPassword(PasswordGenerator.gen());
 				SenseClient.login();
@@ -85,6 +100,7 @@ public class RestServlet {
 				}
 				String stored = JOM.getInstance().writeValueAsString(account);
 				db.set(account.getZprId(), stored);
+				db.sadd(EMAILS, account.getEmail());
 				DB.returnInstance(db);
 				
 				return Response.ok(
@@ -166,19 +182,21 @@ public class RestServlet {
 			SenseClient.login(account);
 			SenseClient.deleteUser(account.getSenseId());
 			db.del(id);
+			db.srem(EMAILS, account.getEmail());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		DB.returnInstance(db);
 		return Response.noContent().build();
 	}
+	
 	/**
 	 * @param id
 	 * @return account
 	 */
 	@Path("{id}")
 	@PUT
-	public Response retrySenseAccount(@PathParam("id") String id){
+	public Response retrySenseAccount(@PathParam("id") String id) {
 		Jedis db = DB.getInstance(DBID);
 		
 		if (!db.exists(id)) {
@@ -203,8 +221,8 @@ public class RestServlet {
 			db.set(account.getZprId(), stored);
 			DB.returnInstance(db);
 			
-			return Response.ok(
-					JOM.getInstance().writeValueAsString(account)).build();
+			return Response.ok(JOM.getInstance().writeValueAsString(account))
+					.build();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
