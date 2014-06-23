@@ -14,12 +14,12 @@ import org.universAAL.middleware.container.osgi.uAALBundleContainer;
  */
 public class Activator implements BundleActivator {
 	
-	private Collector				collector		= null;
+	private Publisher				collector		= null;
 	
 	public void start(BundleContext bcontext) throws Exception {
 		ModuleContext context = uAALBundleContainer.THE_CONTAINER
 				.registerModule(new Object[] { bcontext });
-		collector = new Collector(context);
+		collector = new Publisher(context);
 	}
 	
 	public void stop(BundleContext arg0) throws Exception {

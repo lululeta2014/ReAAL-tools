@@ -32,7 +32,6 @@ public class MySubscriber extends ContextSubscriber {
 	@Override
 	public void handleContextEvent(ContextEvent event) {
 		Double other = (Double) event.getRDFObject();
-		System.out.println("Value:"+other);
-		
+		System.err.println("Received measurement value:"+other);
 	};
 }

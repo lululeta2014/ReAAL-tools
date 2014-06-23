@@ -33,7 +33,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 /**
  * The Class Collector.
  */
-public class Collector implements Receiver {
+public class Publisher implements Receiver {
 	private ContextPublisher		cpublisher	= null;
 	
 	private Scheduler				scheduler	= new SimpleSchedulerBuilder()
@@ -51,7 +51,7 @@ public class Collector implements Receiver {
 	 * @param context
 	 *            the context
 	 */
-	public Collector(ModuleContext context) {
+	public Publisher(ModuleContext context) {
 		ContextProvider myContextProvider = new ContextProvider(
 				"http://ontology.universaal.org/Measurement.owl#measurement");
 		
@@ -85,8 +85,8 @@ public class Collector implements Receiver {
 	 */
 	public void getSensorData(String sensorId) {
 		AccountBean account = new AccountBean();
-		account.setEmail("reaaltest@almende.org");
-		account.setPassword("DossierRijnmond15");
+		account.setEmail(Settings.SensorOwnerEmail);
+		account.setPassword(Settings.SensorOwnerPassword);
 		SenseClient.login(account);
 		
 		String result = SenseClient.getSensorValue(sensorId);
@@ -153,7 +153,7 @@ public class Collector implements Receiver {
 	public void receive(Object msg, URI senderUrl, String tag) {
 		// Scheduler receival (check if other transports are added in the
 		// future.
-		scheduler.schedule("Go!", DateTime.now().plus(10000));
-		getSensorData("540641");
+		scheduler.schedule("Go!", DateTime.now().plus(Settings.interval));
+		getSensorData(Settings.SensorId);
 	}
 }
